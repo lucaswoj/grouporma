@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(PersistentStore.self) private var store
-    @State private var selection: Int = 9
+    @State private var selection: Int = 0
 
     var body: some View {
         TabView(selection: $selection) {
