@@ -12,15 +12,15 @@ struct CategoryPane: View {
         let catScore = state.score(for: category)
         let catGAR = ScoreColor.gar(forCategory: catScore)
 
-        VStack(alignment: .leading, spacing: 14) {
-            VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 6) {
                 HStack(alignment: .center, spacing: 12) {
                     Text(category.title)
                         .font(.largeTitle.weight(.bold))
                         .lineLimit(1)
                         .minimumScaleFactor(0.75)
                     Spacer(minLength: 8)
-                    ScoreCircle(value: catScore, gar: catGAR, size: 44)
+                    ScoreCircle(value: catScore, gar: catGAR, size: 40)
                 }
                 Text(category.description)
                     .font(.subheadline)
@@ -28,7 +28,7 @@ struct CategoryPane: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             .padding(.horizontal, 20)
-            .padding(.top, 12)
+            .padding(.top, 8)
 
             VStack(spacing: 10) {
                 ForEach(Vote.allCases) { zone in
@@ -49,7 +49,7 @@ struct CategoryPane: View {
                     )
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 20)
 
             Spacer(minLength: 12)
 
@@ -59,13 +59,13 @@ struct CategoryPane: View {
                 }
             } label: {
                 Label(isLast ? "See results" : "Next", systemImage: "chevron.right")
-                    .font(.body.weight(.semibold))
+                    .font(.title3.weight(.semibold))
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
+                    .padding(.vertical, 14)
             }
             .buttonStyle(.borderedProminent)
             .padding(.horizontal, 20)
-            .padding(.bottom, 48)
+            .padding(.bottom, 56)
         }
     }
 }

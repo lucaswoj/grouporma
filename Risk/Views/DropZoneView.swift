@@ -35,11 +35,11 @@ struct DropZoneView: View {
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: 18)
+                RoundedRectangle(cornerRadius: 16)
                     .fill(tint.opacity(isPressed ? 0.28 : 0.14))
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 18)
+                RoundedRectangle(cornerRadius: 16)
                     .strokeBorder(
                         isTargeted ? tint : tint.opacity(0.35),
                         style: StrokeStyle(lineWidth: isTargeted ? 2.5 : 1, dash: isTargeted ? [] : [])

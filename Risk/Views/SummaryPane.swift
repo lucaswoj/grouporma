@@ -11,33 +11,28 @@ struct SummaryPane: View {
         let gar = state.overallGAR
 
         ScrollView {
-            VStack(spacing: 20) {
-                VStack(spacing: 6) {
-                    Text("Score")
-                        .font(.headline)
+            VStack(spacing: 16) {
+                VStack(spacing: 8) {
+                    Text("Overall Score")
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
                         .textCase(.uppercase)
+                        .tracking(0.5)
                     Text("\(total)")
-                        .font(.system(size: 96, weight: .heavy, design: .rounded))
+                        .font(.system(size: 84, weight: .heavy, design: .rounded))
                         .monospacedDigit()
                         .contentTransition(.numericText())
-                        .foregroundStyle(gar.color.mix(with: .primary, by: 0.4))
-                    Text(gar.label)
-                        .font(.title2.weight(.bold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 18)
-                        .padding(.vertical, 6)
-                        .background(gar.color, in: .capsule)
+                        .foregroundStyle(gar.color)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 28)
-                .background(gar.color.opacity(0.14), in: .rect(cornerRadius: 24))
+                .padding(.vertical, 24)
+                .background(gar.color.opacity(0.14), in: .rect(cornerRadius: 20))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 24)
-                        .strokeBorder(gar.color.opacity(0.4), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 20)
+                        .strokeBorder(gar.color.opacity(0.35), lineWidth: 1)
                 )
                 .padding(.horizontal, 20)
-                .padding(.top, 16)
+                .padding(.top, 8)
 
                 VStack(spacing: 0) {
                     ForEach(Category.all) { cat in
@@ -49,41 +44,42 @@ struct SummaryPane: View {
                             Spacer()
                             ScoreCircle(value: s, gar: g, size: 30)
                         }
-                        .padding(.horizontal, 18)
-                        .padding(.vertical, 8)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
                         if cat.id != Category.all.last?.id {
-                            Divider().padding(.leading, 18)
+                            Divider().padding(.leading, 16)
                         }
                     }
                 }
-                .background(.regularMaterial, in: .rect(cornerRadius: 18))
+                .background(.regularMaterial, in: .rect(cornerRadius: 16))
                 .padding(.horizontal, 20)
 
-                ShareLink(
-                    item: state.shareString(),
-                    subject: Text("ORMA results"),
-                    message: Text("Group ORMA assessment from Risk")
-                ) {
-                    Label("Share results", systemImage: "square.and.arrow.up")
-                        .font(.title3.weight(.semibold))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
+                HStack(spacing: 10) {
+                    ShareLink(
+                        item: state.shareString(),
+                        subject: Text("ORMA results"),
+                        message: Text("Group ORMA assessment from Risk")
+                    ) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                            .font(.title3.weight(.semibold))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                    }
+                    .buttonStyle(.borderedProminent)
+
+                    Button(role: .destructive) {
+                        showResetConfirm = true
+                    } label: {
+                        Label("Reset", systemImage: "arrow.counterclockwise")
+                            .font(.title3.weight(.semibold))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                    }
+                    .buttonStyle(.bordered)
                 }
-                .buttonStyle(.borderedProminent)
                 .padding(.horizontal, 20)
                 .padding(.top, 4)
-
-                Button(role: .destructive) {
-                    showResetConfirm = true
-                } label: {
-                    Label("New assessment", systemImage: "arrow.counterclockwise")
-                        .font(.body.weight(.medium))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                }
-                .buttonStyle(.bordered)
-                .padding(.horizontal, 20)
-                .padding(.bottom, 80)
+                .padding(.bottom, 56)
                 .confirmationDialog("Start a new assessment?", isPresented: $showResetConfirm, titleVisibility: .visible) {
                     Button("Reset", role: .destructive) {
                         store.newAssessment()

@@ -5,22 +5,27 @@ struct StartPane: View {
     @Binding var selection: Int
 
     var body: some View {
-        VStack(spacing: 32) {
-            Spacer(minLength: 24)
+        VStack(spacing: 24) {
+            Spacer(minLength: 12)
 
-            Text("Group ORMA")
-                .font(.largeTitle.weight(.bold))
+            VStack(spacing: 12) {
+                Text("Group ORMA")
+                    .font(.largeTitle.weight(.bold))
 
-            Text("Operational Risk Management Assessment. Vote thumbs up, sideways, or down across 8 categories. The total guides the team's go / no-go discussion.")
-                .font(.body)
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 28)
+                Text("Operational Risk Management Assessment. Vote thumbs up, sideways, or down across 8 categories. The total guides the team's go / no-go discussion.")
+                    .font(.body)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 24)
+            }
 
-            VStack(spacing: 8) {
+            VStack(spacing: 10) {
                 Text("Participants")
-                    .font(.headline)
-                HStack(spacing: 20) {
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .textCase(.uppercase)
+                    .tracking(0.5)
+                HStack(spacing: 24) {
                     Button {
                         store.state.setParticipantCount(store.state.participantCount - 1)
                     } label: {
@@ -45,25 +50,26 @@ struct StartPane: View {
                 }
                 .sensoryFeedback(.selection, trigger: store.state.participantCount)
                 Text("2 to 12")
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(.tertiary)
             }
-            .padding(24)
-            .background(.regularMaterial, in: .rect(cornerRadius: 24))
-            .padding(.horizontal, 24)
+            .padding(.vertical, 20)
+            .padding(.horizontal, 32)
+            .background(.regularMaterial, in: .rect(cornerRadius: 20))
+            .padding(.horizontal, 20)
 
             Spacer()
 
             Button {
                 withAnimation { selection = 1 }
             } label: {
-                Label("Begin", systemImage: "chevron.right.circle.fill")
+                Label("Begin", systemImage: "chevron.right")
                     .font(.title3.weight(.semibold))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
             }
             .buttonStyle(.borderedProminent)
-            .padding(.horizontal, 24)
+            .padding(.horizontal, 20)
             .padding(.bottom, 56)
         }
     }
