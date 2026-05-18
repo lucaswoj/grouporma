@@ -1,0 +1,24 @@
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+*.xcuserdatad/
+xcuserdata/
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
+
+# CocoaPods / SPM
+Pods/
+.build/
+.swiftpm/
+
+# macOS
+.DS_Store
+
+# Generated project (regenerate with `xcodegen generate`)
+# Risk.xcodeproj/  # keep committed for easy clone-and-build
+
+# Editor
+.vscode/
+.idea/
