@@ -13,7 +13,7 @@ struct SummaryPane: View {
         ScrollView {
             VStack(spacing: 20) {
                 VStack(spacing: 6) {
-                    Text("ORMA Result")
+                    Text("Score")
                         .font(.headline)
                         .foregroundStyle(.secondary)
                         .textCase(.uppercase)

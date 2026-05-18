@@ -23,7 +23,7 @@ struct CategoryPane: View {
                         .foregroundStyle(.secondary)
                 }
                 Spacer(minLength: 12)
-                ScoreChip(label: "Overall", value: overall, gar: ScoreColor.gar(forOverall: overall))
+                ScoreChip(label: "Score", value: overall, gar: ScoreColor.gar(forOverall: overall))
             }
             .padding(.horizontal, 20)
             .padding(.top, 12)

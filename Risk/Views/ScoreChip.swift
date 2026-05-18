@@ -12,19 +12,23 @@ struct ScoreChip: View {
                 .foregroundStyle(.secondary)
                 .textCase(.uppercase)
             Text("\(value)")
-                .font(.title2.weight(.bold))
+                .font(.title.weight(.bold))
                 .monospacedDigit()
                 .contentTransition(.numericText())
+            Text(gar.label)
+                .font(.caption2.weight(.heavy))
+                .textCase(.uppercase)
+                .tracking(0.5)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 8)
-        .frame(minWidth: 72)
-        .background(gar.color.opacity(0.18), in: .rect(cornerRadius: 12))
+        .frame(minWidth: 84)
+        .background(gar.color.opacity(0.18), in: .rect(cornerRadius: 14))
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(gar.color.opacity(0.5), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 14)
+                .strokeBorder(gar.color.opacity(0.55), lineWidth: 1)
         )
-        .foregroundStyle(gar.color.mix(with: .primary, by: 0.4))
+        .foregroundStyle(gar.color.mix(with: .primary, by: 0.35))
     }
 }
 
