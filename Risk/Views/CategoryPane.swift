@@ -9,21 +9,17 @@ struct CategoryPane: View {
 
     var body: some View {
         let state = store.state
-        let overall = state.overallScore
 
         VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(category.title)
-                        .font(.largeTitle.weight(.bold))
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.75)
-                    Text(category.description)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer(minLength: 12)
-                ScoreChip(label: "Score", value: overall, gar: ScoreColor.gar(forOverall: overall))
+            VStack(alignment: .leading, spacing: 4) {
+                Text(category.title)
+                    .font(.largeTitle.weight(.bold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+                Text(category.description)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .padding(.horizontal, 20)
             .padding(.top, 12)

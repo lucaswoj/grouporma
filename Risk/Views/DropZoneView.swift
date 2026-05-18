@@ -32,7 +32,7 @@ struct DropZoneView: View {
                 .foregroundStyle(tint)
 
                 tokenStrip
-                    .frame(height: 104, alignment: .topLeading)
+                    .frame(height: 84, alignment: .topLeading)
             }
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -71,7 +71,7 @@ struct DropZoneView: View {
     private var tokenStrip: some View {
         FlowLayout(spacing: 8) {
             ForEach(tokens) { token in
-                TokenView(tint: tint, size: 44)
+                TokenView(tint: tint, size: 36)
                     .draggable(token.id.uuidString)
                     .matchedGeometryEffect(id: token.id, in: tokenNamespace)
                     .transition(.scale.combined(with: .opacity))
