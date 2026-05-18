@@ -8,22 +8,14 @@ struct StartPane: View {
         VStack(spacing: 32) {
             Spacer(minLength: 24)
 
-            VStack(spacing: 12) {
-                Image(systemName: "shield.lefthalf.filled")
-                    .font(.system(size: 64, weight: .semibold))
-                    .foregroundStyle(.tint)
-                Text("Risk")
-                    .font(.largeTitle.weight(.bold))
-                Text("Group ORMA")
-                    .font(.title3)
-                    .foregroundStyle(.secondary)
-            }
+            Text("Group ORMA")
+                .font(.largeTitle.weight(.bold))
 
-            Text("ORMA is the team risk assessment used by NPS Search and Rescue. Each person votes thumbs up, sideways, or down on 8 categories. Swipe to begin.")
+            Text("Operational Risk Management Assessment. Vote thumbs up, sideways, or down across 8 categories. The total guides the team's go / no-go discussion.")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
-                .padding(.horizontal, 32)
+                .padding(.horizontal, 28)
 
             VStack(spacing: 8) {
                 Text("Participants")
