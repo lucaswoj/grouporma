@@ -9,13 +9,19 @@ struct CategoryPane: View {
 
     var body: some View {
         let state = store.state
+        let catScore = state.score(for: category)
+        let catGAR = ScoreColor.gar(forCategory: catScore)
 
         VStack(alignment: .leading, spacing: 14) {
             VStack(alignment: .leading, spacing: 4) {
-                Text(category.title)
-                    .font(.largeTitle.weight(.bold))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.75)
+                HStack(alignment: .center, spacing: 12) {
+                    Text(category.title)
+                        .font(.largeTitle.weight(.bold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                    Spacer(minLength: 8)
+                    ScoreCircle(value: catScore, gar: catGAR, size: 44)
+                }
                 Text(category.description)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)

@@ -43,20 +43,14 @@ struct SummaryPane: View {
                     ForEach(Category.all) { cat in
                         let s = state.score(for: cat)
                         let g = ScoreColor.gar(forCategory: s)
-                        HStack {
-                            Circle()
-                                .fill(g.color)
-                                .frame(width: 10, height: 10)
+                        HStack(spacing: 12) {
                             Text(cat.title)
                                 .font(.body)
                             Spacer()
-                            Text("\(s)")
-                                .font(.body.weight(.semibold))
-                                .monospacedDigit()
-                                .frame(minWidth: 32, alignment: .trailing)
+                            ScoreCircle(value: s, gar: g, size: 30)
                         }
                         .padding(.horizontal, 18)
-                        .padding(.vertical, 12)
+                        .padding(.vertical, 8)
                         if cat.id != Category.all.last?.id {
                             Divider().padding(.leading, 18)
                         }

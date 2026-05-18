@@ -22,12 +22,10 @@ struct DropZoneView: View {
                     Text(zone.label)
                         .font(.subheadline.weight(.semibold))
                     Spacer()
-                    Text("\(tokens.count)")
-                        .font(.subheadline.weight(.semibold))
+                    Text("^[\(tokens.count) vote](inflect: true)")
+                        .font(.caption.weight(.medium))
                         .monospacedDigit()
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 2)
-                        .background(tint.opacity(0.18), in: .capsule)
+                        .foregroundStyle(tint.opacity(0.75))
                 }
                 .foregroundStyle(tint)
 
