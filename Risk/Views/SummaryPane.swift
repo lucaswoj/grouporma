@@ -18,11 +18,17 @@ struct SummaryPane: View {
                         .foregroundStyle(.secondary)
                         .textCase(.uppercase)
                         .tracking(0.5)
-                    Text("\(total)")
-                        .font(.system(size: 84, weight: .heavy, design: .rounded))
-                        .monospacedDigit()
-                        .contentTransition(.numericText())
-                        .foregroundStyle(gar.color)
+                    HStack(spacing: 18) {
+                        Text("\(total)")
+                            .font(.system(size: 84, weight: .heavy, design: .rounded))
+                            .monospacedDigit()
+                            .contentTransition(.numericText())
+                        Image(systemName: gar.vote.symbolName)
+                            .font(.system(size: 72, weight: .semibold))
+                            .symbolRenderingMode(.hierarchical)
+                            .rotationEffect(gar.vote.symbolRotation)
+                    }
+                    .foregroundStyle(gar.color)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 24)
@@ -42,7 +48,7 @@ struct SummaryPane: View {
                             Text(cat.title)
                                 .font(.body)
                             Spacer()
-                            ScoreCircle(value: s, gar: g, size: 30)
+                            ScoreCapsule(value: s, gar: g, height: 30)
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 10)

@@ -20,6 +20,14 @@ enum GAR: String, Codable {
         case .red: Color.red
         }
     }
+
+    var vote: Vote {
+        switch self {
+        case .green: .up
+        case .amber: .sideways
+        case .red: .down
+        }
+    }
 }
 
 enum ScoreColor {

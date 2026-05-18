@@ -17,7 +17,7 @@
 		41F22DB4CE84BEE927E889F4 /* TokenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E22EA7E53A562E81A43FCDE /* TokenView.swift */; };
 		610CD038614546EFDDF4CCD2 /* SummaryPane.swift in Sources */ = {isa = PBXBuildFile; fileRef = D531CF49E7B6687116CCAE9F /* SummaryPane.swift */; };
 		63DF5874B88878C608E38784 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424ABB26B99014DE7C832CBF /* Category.swift */; };
-		821880EC2043A9D65B455EAA /* ScoreCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31896A007919E3F94B8F0ABF /* ScoreCircle.swift */; };
+		6BA66BA76F294D4504B7760D /* ScoreCapsule.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA022B48AF17F823F095AAF2 /* ScoreCapsule.swift */; };
 		8E47322ABE41372B3A4D7DC1 /* ScoreChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09ECD4BDE6A4BC08FCC2EBEF /* ScoreChip.swift */; };
 		D2864C1D797332AC2464D7DB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB9A6ED9479E65BF33978187 /* Assets.xcassets */; };
 		D8746EE3F72A343C393AB287 /* ScoreColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D06774ABB4C77748103129B2 /* ScoreColor.swift */; };
@@ -27,7 +27,6 @@
 
 /* Begin PBXFileReference section */
 		09ECD4BDE6A4BC08FCC2EBEF /* ScoreChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreChip.swift; sourceTree = "<group>"; };
-		31896A007919E3F94B8F0ABF /* ScoreCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreCircle.swift; sourceTree = "<group>"; };
 		424ABB26B99014DE7C832CBF /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		431C1C9B71AC9DE141C1EFE5 /* Token.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
 		505376EC7E280B4248A8E64F /* DropZoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropZoneView.swift; sourceTree = "<group>"; };
@@ -40,6 +39,7 @@
 		A474E43D45B45FB1EF3651F5 /* PersistentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistentStore.swift; sourceTree = "<group>"; };
 		B0464D2FB8A74F296BBB839F /* CategoryPane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryPane.swift; sourceTree = "<group>"; };
 		BB9A6ED9479E65BF33978187 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		CA022B48AF17F823F095AAF2 /* ScoreCapsule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreCapsule.swift; sourceTree = "<group>"; };
 		D006EA5FC0A53B6D08B2C61E /* RiskApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiskApp.swift; sourceTree = "<group>"; };
 		D06774ABB4C77748103129B2 /* ScoreColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreColor.swift; sourceTree = "<group>"; };
 		D531CF49E7B6687116CCAE9F /* SummaryPane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryPane.swift; sourceTree = "<group>"; };
@@ -92,8 +92,8 @@
 			children = (
 				B0464D2FB8A74F296BBB839F /* CategoryPane.swift */,
 				505376EC7E280B4248A8E64F /* DropZoneView.swift */,
+				CA022B48AF17F823F095AAF2 /* ScoreCapsule.swift */,
 				09ECD4BDE6A4BC08FCC2EBEF /* ScoreChip.swift */,
-				31896A007919E3F94B8F0ABF /* ScoreCircle.swift */,
 				89C65E31E1856722F51F9E6C /* StartPane.swift */,
 				D531CF49E7B6687116CCAE9F /* SummaryPane.swift */,
 				5E22EA7E53A562E81A43FCDE /* TokenView.swift */,
@@ -179,8 +179,8 @@
 				F62CCFB7BAE29582822084EC /* DropZoneView.swift in Sources */,
 				046EBBA1212022CB6C32C65F /* PersistentStore.swift in Sources */,
 				F611B39135DEA5AD93424FAB /* RiskApp.swift in Sources */,
+				6BA66BA76F294D4504B7760D /* ScoreCapsule.swift in Sources */,
 				8E47322ABE41372B3A4D7DC1 /* ScoreChip.swift in Sources */,
-				821880EC2043A9D65B455EAA /* ScoreCircle.swift in Sources */,
 				D8746EE3F72A343C393AB287 /* ScoreColor.swift in Sources */,
 				04AB23EFFF525824EFB20F71 /* StartPane.swift in Sources */,
 				610CD038614546EFDDF4CCD2 /* SummaryPane.swift in Sources */,

@@ -20,7 +20,7 @@ struct CategoryPane: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.75)
                     Spacer(minLength: 8)
-                    ScoreCircle(value: catScore, gar: catGAR, size: 40)
+                    ScoreCapsule(value: catScore, gar: catGAR, height: 40)
                 }
                 Text(category.description)
                     .font(.subheadline)
@@ -58,7 +58,7 @@ struct CategoryPane: View {
                     selection = paneIndex + 1
                 }
             } label: {
-                Label(isLast ? "See results" : "Next", systemImage: "chevron.right")
+                Text(isLast ? "See results" : "Next")
                     .font(.title3.weight(.semibold))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)

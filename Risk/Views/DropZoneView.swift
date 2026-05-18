@@ -16,16 +16,16 @@ struct DropZoneView: View {
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 8) {
                     Image(systemName: zone.symbolName)
-                        .font(.title3.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                         .symbolRenderingMode(.hierarchical)
                         .rotationEffect(zone.symbolRotation)
                     Text(zone.label)
                         .font(.subheadline.weight(.semibold))
                     Spacer()
                     Text("^[\(tokens.count) vote](inflect: true)")
-                        .font(.caption.weight(.medium))
+                        .font(.subheadline.weight(.semibold))
                         .monospacedDigit()
-                        .foregroundStyle(tint.opacity(0.75))
+                        .opacity(0.7)
                 }
                 .foregroundStyle(tint)
 

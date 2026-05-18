@@ -63,7 +63,7 @@ struct StartPane: View {
             Button {
                 withAnimation { selection = 1 }
             } label: {
-                Label("Begin", systemImage: "chevron.right")
+                Text("Begin")
                     .font(.title3.weight(.semibold))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
