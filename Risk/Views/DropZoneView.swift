@@ -3,13 +3,11 @@ import SwiftUI
 struct DropZoneView: View {
     let zone: Vote
     let category: Category
-    let tokens: [Token]
+    let count: Int
     var onTap: () -> Void
-    var onDrop: (UUID) -> Void
+    var onDrop: (Vote) -> Void
 
     @State private var isTargeted = false
-    @State private var isPressed = false
-    @Namespace private var tokenNamespace
 
     var body: some View {
         Button(action: onTap) {
@@ -22,40 +20,33 @@ struct DropZoneView: View {
                     Text(zone.label)
                         .font(.subheadline.weight(.semibold))
                     Spacer()
-                    Text("^[\(tokens.count) vote](inflect: true)")
+                    Text("^[\(count) vote](inflect: true)")
                         .font(.subheadline.weight(.semibold))
                         .monospacedDigit()
                         .opacity(0.7)
                 }
                 .foregroundStyle(tint)
 
-                tokenStrip
-                    .frame(height: 84, alignment: .topLeading)
+                FlowLayout(spacing: 8) {
+                    ForEach(0..<count, id: \.self) { _ in
+                        TokenView(tint: tint, size: 36)
+                            .draggable(zone.rawValue)
+                            .transition(.scale.combined(with: .opacity))
+                    }
+                }
+                .frame(height: 84, alignment: .topLeading)
             }
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(tint.opacity(isPressed ? 0.28 : 0.14))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .strokeBorder(
-                        isTargeted ? tint : tint.opacity(0.35),
-                        style: StrokeStyle(lineWidth: isTargeted ? 2.5 : 1, dash: isTargeted ? [] : [])
-                    )
-            )
-            .scaleEffect(isPressed ? 0.98 : 1.0)
-            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: isPressed)
-            .animation(.spring(response: 0.3, dampingFraction: 0.75), value: isTargeted)
         }
-        .buttonStyle(PressedStyle(isPressed: $isPressed))
+        .buttonStyle(DropZoneButtonStyle(tint: tint, isTargeted: isTargeted))
         .dropDestination(for: String.self) { items, _ in
-            guard let raw = items.first, let id = UUID(uuidString: raw) else { return false }
-            onDrop(id)
+            guard let raw = items.first, let source = Vote(rawValue: raw) else { return false }
+            onDrop(source)
             return true
         } isTargeted: { isTargeted = $0 }
-        .sensoryFeedback(.impact(weight: .light), trigger: tokens.count)
+        .animation(.spring(response: 0.3, dampingFraction: 0.75), value: isTargeted)
+        .sensoryFeedback(.impact(weight: .light), trigger: count)
     }
 
     private var tint: Color {
@@ -65,24 +56,27 @@ struct DropZoneView: View {
         case .down: .red
         }
     }
-
-    private var tokenStrip: some View {
-        FlowLayout(spacing: 8) {
-            ForEach(tokens) { token in
-                TokenView(tint: tint, size: 36)
-                    .draggable(token.id.uuidString)
-                    .matchedGeometryEffect(id: token.id, in: tokenNamespace)
-                    .transition(.scale.combined(with: .opacity))
-            }
-        }
-    }
 }
 
-private struct PressedStyle: ButtonStyle {
-    @Binding var isPressed: Bool
+private struct DropZoneButtonStyle: ButtonStyle {
+    let tint: Color
+    let isTargeted: Bool
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .onChange(of: configuration.isPressed) { _, new in isPressed = new }
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(tint.opacity(configuration.isPressed ? 0.28 : 0.14))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .strokeBorder(
+                        isTargeted ? tint : tint.opacity(0.35),
+                        lineWidth: isTargeted ? 2.5 : 1
+                    )
+            )
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
     }
 }
 

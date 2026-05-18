@@ -3,7 +3,7 @@ import Observation
 
 @Observable
 final class PersistentStore {
-    static let key = "risk.assessment.v1"
+    static let key = "risk.assessment.v2"
 
     var state: AssessmentState
 
@@ -24,9 +24,8 @@ final class PersistentStore {
         }
     }
 
-    func newAssessment(participantCount: Int? = nil) {
-        let n = participantCount ?? state.participantCount
-        state = AssessmentState(participantCount: n)
+    func newAssessment() {
+        state = AssessmentState(participantCount: state.participantCount)
         save()
     }
 }

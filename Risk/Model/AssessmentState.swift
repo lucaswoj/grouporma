@@ -1,123 +1,66 @@
 import Foundation
-import Observation
 
-@Observable
-final class AssessmentState: Codable {
+struct AssessmentState: Codable, Equatable {
     var participantCount: Int
-    var votes: [String: [Vote: [Token]]]
-    var notes: [String: String]
+    var votes: [String: [Vote: Int]]
+    var notes: [String: String] = [:]
     var startedAt: Date
-
-    private enum CodingKeys: String, CodingKey {
-        case participantCount, votes, notes, startedAt
-    }
 
     init(participantCount: Int = 4) {
         self.participantCount = participantCount
         self.startedAt = Date()
         self.votes = [:]
-        self.notes = [:]
         seedAllUp()
     }
 
-    required init(from decoder: Decoder) throws {
-        let c = try decoder.container(keyedBy: CodingKeys.self)
-        participantCount = try c.decode(Int.self, forKey: .participantCount)
-        votes = try c.decode([String: [Vote: [Token]]].self, forKey: .votes)
-        notes = try c.decodeIfPresent([String: String].self, forKey: .notes) ?? [:]
-        startedAt = try c.decode(Date.self, forKey: .startedAt)
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var c = encoder.container(keyedBy: CodingKeys.self)
-        try c.encode(participantCount, forKey: .participantCount)
-        try c.encode(votes, forKey: .votes)
-        try c.encode(notes, forKey: .notes)
-        try c.encode(startedAt, forKey: .startedAt)
-    }
-
-    func setParticipantCount(_ n: Int) {
+    mutating func setParticipantCount(_ n: Int) {
         let clamped = max(2, min(12, n))
         guard clamped != participantCount else { return }
         participantCount = clamped
         seedAllUp()
     }
 
-    func reset() {
-        startedAt = Date()
-        notes = [:]
-        seedAllUp()
-    }
-
-    func resetCategory(_ category: Category) {
-        votes[category.id] = [.up: makeTokens(count: participantCount), .sideways: [], .down: []]
-        notes[category.id] = ""
-    }
-
-    private func seedAllUp() {
-        var fresh: [String: [Vote: [Token]]] = [:]
+    private mutating func seedAllUp() {
         for cat in Category.all {
-            fresh[cat.id] = [.up: makeTokens(count: participantCount), .sideways: [], .down: []]
+            votes[cat.id] = [.up: max(participantCount, 1), .sideways: 0, .down: 0]
         }
-        votes = fresh
     }
 
-    private func makeTokens(count: Int) -> [Token] {
-        (0..<max(count, 1)).map { _ in Token(id: UUID()) }
+    func count(in category: Category, zone: Vote) -> Int {
+        votes[category.id]?[zone] ?? 0
     }
 
-    func tokens(in category: Category, zone: Vote) -> [Token] {
-        votes[category.id]?[zone] ?? []
-    }
-
-    func zone(of tokenID: UUID, in category: Category) -> Vote? {
-        guard let zones = votes[category.id] else { return nil }
-        for (zone, tokens) in zones where tokens.contains(where: { $0.id == tokenID }) {
-            return zone
-        }
-        return nil
-    }
-
-    func move(tokenID: UUID, in category: Category, to destination: Vote) {
-        guard var zones = votes[category.id] else { return }
-        var moved: Token?
-        for zone in Vote.allCases {
-            if let i = zones[zone]?.firstIndex(where: { $0.id == tokenID }) {
-                moved = zones[zone]?.remove(at: i)
-                break
-            }
-        }
-        guard let token = moved else { return }
-        if zones[destination] == nil { zones[destination] = [] }
-        zones[destination]?.append(token)
+    mutating func move(in category: Category, from source: Vote, to destination: Vote) {
+        guard source != destination,
+              var zones = votes[category.id],
+              (zones[source] ?? 0) > 0
+        else { return }
+        zones[source, default: 0] -= 1
+        zones[destination, default: 0] += 1
         votes[category.id] = zones
     }
 
     // Primary "tap a zone" gesture: pull one token from the most logical source.
     // For sideways/down targets, prefer up first, then the other non-target zone.
     // For up targets, prefer sideways first, then down (a symmetric "undo").
-    func tapMove(in category: Category, to destination: Vote) {
+    mutating func tapMove(in category: Category, to destination: Vote) {
         let preferred: [Vote] = switch destination {
         case .up: [.sideways, .down]
         case .sideways: [.up, .down]
         case .down: [.up, .sideways]
         }
-        for source in preferred {
-            if let token = tokens(in: category, zone: source).first {
-                move(tokenID: token.id, in: category, to: destination)
-                return
-            }
+        for source in preferred where count(in: category, zone: source) > 0 {
+            move(in: category, from: source, to: destination)
+            return
         }
     }
 
-    // Score for one category: average of all token vote values, rounded to nearest int (1-10).
+    // Score for one category: weighted average of vote values, rounded to 1-10.
     func score(for category: Category) -> Int {
-        let all = Vote.allCases.flatMap { vote in
-            tokens(in: category, zone: vote).map { _ in vote.score }
-        }
-        guard !all.isEmpty else { return 1 }
-        let avg = Double(all.reduce(0, +)) / Double(all.count)
-        return Int(avg.rounded())
+        let weighted = Vote.allCases.map { ($0.score, count(in: category, zone: $0)) }
+        let total = weighted.reduce(0) { $0 + $1.0 * $1.1 }
+        let n = weighted.reduce(0) { $0 + $1.1 }
+        return n == 0 ? 1 : Int((Double(total) / Double(n)).rounded())
     }
 
     var overallScore: Int {
@@ -126,25 +69,20 @@ final class AssessmentState: Codable {
 
     var overallBand: RiskBand { ScoreColor.band(forOverall: overallScore) }
 
-    func shareString(now: Date = Date()) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "EEE MMM d yyyy HH:mm:ss zzz"
-        let timestamp = formatter.string(from: now)
-
+    func shareString() -> String {
         var out = "ORMA results\n"
         out += "Overall score: \(overallScore)  [\(overallBand.label)]\n\n"
         for cat in Category.all {
             out += "\(cat.title)\n"
             out += "Description: \(cat.description)\n"
             out += "Score: \(score(for: cat))\n"
-            let note = notes[cat.id] ?? ""
-            if !note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            let note = (notes[cat.id] ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            if !note.isEmpty {
                 out += "Notes: \(note)\n"
             }
             out += "\n"
         }
-        out += "Generated by Risk (group ORMA) at \(timestamp)."
+        out += "Generated by Risk (group ORMA) at \(Date().formatted(.iso8601))."
         return out
     }
 }

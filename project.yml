@@ -25,10 +25,8 @@ schemes:
 settings:
   base:
     SWIFT_VERSION: "5.10"
-    DEVELOPMENT_TEAM: ""
+    DEVELOPMENT_TEAM: "6WCV8HHBRN"
     CODE_SIGN_STYLE: Automatic
-    CODE_SIGNING_REQUIRED: NO
-    CODE_SIGNING_ALLOWED: NO
 targets:
   Risk:
     type: application

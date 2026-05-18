@@ -9,8 +9,7 @@ struct CategoryPane: View {
     @FocusState private var notesFocused: Bool
 
     var body: some View {
-        let state = store.state
-        let catScore = state.score(for: category)
+        let catScore = store.state.score(for: category)
         let catBand = ScoreColor.band(forCategory: catScore)
 
         ScrollView {
@@ -37,15 +36,15 @@ struct CategoryPane: View {
                         DropZoneView(
                             zone: zone,
                             category: category,
-                            tokens: state.tokens(in: category, zone: zone),
+                            count: store.state.count(in: category, zone: zone),
                             onTap: {
                                 withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
-                                    state.tapMove(in: category, to: zone)
+                                    store.state.tapMove(in: category, to: zone)
                                 }
                             },
-                            onDrop: { id in
+                            onDrop: { source in
                                 withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
-                                    state.move(tokenID: id, in: category, to: zone)
+                                    store.state.move(in: category, from: source, to: zone)
                                 }
                             }
                         )
@@ -56,8 +55,8 @@ struct CategoryPane: View {
                 TextField(
                     "Hazards, outliers, rationale…",
                     text: Binding(
-                        get: { state.notes[category.id] ?? "" },
-                        set: { state.notes[category.id] = $0 }
+                        get: { store.state.notes[category.id] ?? "" },
+                        set: { store.state.notes[category.id] = $0 }
                     ),
                     axis: .vertical
                 )

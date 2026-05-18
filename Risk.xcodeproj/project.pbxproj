@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		046EBBA1212022CB6C32C65F /* PersistentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A474E43D45B45FB1EF3651F5 /* PersistentStore.swift */; };
 		04AB23EFFF525824EFB20F71 /* StartPane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89C65E31E1856722F51F9E6C /* StartPane.swift */; };
-		0F53CFF974D8402F9DF18FDA /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431C1C9B71AC9DE141C1EFE5 /* Token.swift */; };
 		1851AEF92B3D5F3241751947 /* CategoryPane.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0464D2FB8A74F296BBB839F /* CategoryPane.swift */; };
 		1E9352B7418FB36F1B9CF0CA /* Vote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF52634696C08EDA6ADA77 /* Vote.swift */; };
 		2500C38364594D5F10065AA6 /* AssessmentState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75922D18E06013726A0BB6CC /* AssessmentState.swift */; };
@@ -18,7 +17,6 @@
 		610CD038614546EFDDF4CCD2 /* SummaryPane.swift in Sources */ = {isa = PBXBuildFile; fileRef = D531CF49E7B6687116CCAE9F /* SummaryPane.swift */; };
 		63DF5874B88878C608E38784 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424ABB26B99014DE7C832CBF /* Category.swift */; };
 		6BA66BA76F294D4504B7760D /* ScoreCapsule.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA022B48AF17F823F095AAF2 /* ScoreCapsule.swift */; };
-		8E47322ABE41372B3A4D7DC1 /* ScoreChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09ECD4BDE6A4BC08FCC2EBEF /* ScoreChip.swift */; };
 		D2864C1D797332AC2464D7DB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB9A6ED9479E65BF33978187 /* Assets.xcassets */; };
 		D8746EE3F72A343C393AB287 /* ScoreColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D06774ABB4C77748103129B2 /* ScoreColor.swift */; };
 		F611B39135DEA5AD93424FAB /* RiskApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D006EA5FC0A53B6D08B2C61E /* RiskApp.swift */; };
@@ -26,9 +24,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		09ECD4BDE6A4BC08FCC2EBEF /* ScoreChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreChip.swift; sourceTree = "<group>"; };
 		424ABB26B99014DE7C832CBF /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
-		431C1C9B71AC9DE141C1EFE5 /* Token.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
 		505376EC7E280B4248A8E64F /* DropZoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropZoneView.swift; sourceTree = "<group>"; };
 		50EF52634696C08EDA6ADA77 /* Vote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vote.swift; sourceTree = "<group>"; };
 		5899B1EB2FB5B4610CF9E8C0 /* Risk.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Risk.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -73,7 +69,6 @@
 				424ABB26B99014DE7C832CBF /* Category.swift */,
 				A474E43D45B45FB1EF3651F5 /* PersistentStore.swift */,
 				D06774ABB4C77748103129B2 /* ScoreColor.swift */,
-				431C1C9B71AC9DE141C1EFE5 /* Token.swift */,
 				50EF52634696C08EDA6ADA77 /* Vote.swift */,
 			);
 			path = Model;
@@ -93,7 +88,6 @@
 				B0464D2FB8A74F296BBB839F /* CategoryPane.swift */,
 				505376EC7E280B4248A8E64F /* DropZoneView.swift */,
 				CA022B48AF17F823F095AAF2 /* ScoreCapsule.swift */,
-				09ECD4BDE6A4BC08FCC2EBEF /* ScoreChip.swift */,
 				89C65E31E1856722F51F9E6C /* StartPane.swift */,
 				D531CF49E7B6687116CCAE9F /* SummaryPane.swift */,
 				5E22EA7E53A562E81A43FCDE /* TokenView.swift */,
@@ -132,7 +126,7 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					BDB07F728C8C6705FDB603AE = {
-						DevelopmentTeam = "";
+						DevelopmentTeam = 6WCV8HHBRN;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -180,11 +174,9 @@
 				046EBBA1212022CB6C32C65F /* PersistentStore.swift in Sources */,
 				F611B39135DEA5AD93424FAB /* RiskApp.swift in Sources */,
 				6BA66BA76F294D4504B7760D /* ScoreCapsule.swift in Sources */,
-				8E47322ABE41372B3A4D7DC1 /* ScoreChip.swift in Sources */,
 				D8746EE3F72A343C393AB287 /* ScoreColor.swift in Sources */,
 				04AB23EFFF525824EFB20F71 /* StartPane.swift in Sources */,
 				610CD038614546EFDDF4CCD2 /* SummaryPane.swift in Sources */,
-				0F53CFF974D8402F9DF18FDA /* Token.swift in Sources */,
 				41F22DB4CE84BEE927E889F4 /* TokenView.swift in Sources */,
 				1E9352B7418FB36F1B9CF0CA /* Vote.swift in Sources */,
 			);
@@ -251,12 +243,10 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGNING_ALLOWED = NO;
-				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 6WCV8HHBRN;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -311,12 +301,10 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGNING_ALLOWED = NO;
-				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 6WCV8HHBRN;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;

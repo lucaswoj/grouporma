@@ -41,9 +41,7 @@ struct ContentView: View {
                 .transition(.opacity)
             }
         }
-        .onChange(of: store.state.votes) { _, _ in store.save() }
-        .onChange(of: store.state.participantCount) { _, _ in store.save() }
-        .onChange(of: store.state.notes) { _, _ in store.save() }
+        .onChange(of: store.state) { _, _ in store.save() }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
             withAnimation(.easeInOut(duration: 0.2)) { keyboardVisible = true }
         }
