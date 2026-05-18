@@ -8,13 +8,13 @@ struct StartPane: View {
         VStack(spacing: 24) {
             Spacer(minLength: 12)
 
-            VStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 12) {
                 Text("Group ORMA")
                     .font(.largeTitle.weight(.bold))
+                    .frame(maxWidth: .infinity, alignment: .center)
 
-                Text("Operational Risk Management Assessment. Vote thumbs up, sideways, or down across 8 categories. The total guides the team's go / no-go discussion.")
+                Text("This Operational Risk Management Assessment (ORMA) structures a group review of 8 risk categories. The aggregate score informs the go / no-go decision, but the discussion is what surfaces concerns the score alone cannot capture.\n\nFor each category, count to 3 so everyone votes simultaneously. This prevents anchoring on whoever speaks first.\n\nAny thumbs-down vote pauses the assessment. Record the specific concern and the planned mitigation before continuing.")
                     .font(.body)
-                    .multilineTextAlignment(.center)
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 24)
             }

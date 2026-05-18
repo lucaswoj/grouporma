@@ -9,20 +9,14 @@ struct CategoryPane: View {
     @FocusState private var notesFocused: Bool
 
     var body: some View {
-        let catScore = store.state.score(for: category)
-        let catBand = ScoreColor.band(forCategory: catScore)
-
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 6) {
-                    HStack(alignment: .center, spacing: 12) {
-                        Text(category.title)
-                            .font(.largeTitle.weight(.bold))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.75)
-                        Spacer(minLength: 8)
-                        ScoreCapsule(value: catScore, band: catBand, height: 40)
-                    }
+                    Text(category.title)
+                        .font(.largeTitle.weight(.bold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     Text(category.description)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
@@ -53,7 +47,7 @@ struct CategoryPane: View {
                 .padding(.horizontal, 20)
 
                 TextField(
-                    "Hazards, outliers, rationale…",
+                    "Notes",
                     text: Binding(
                         get: { store.state.notes[category.id] ?? "" },
                         set: { store.state.notes[category.id] = $0 }
@@ -70,6 +64,15 @@ struct CategoryPane: View {
                         .strokeBorder(Color.secondary.opacity(0.2), lineWidth: 1)
                 )
                 .focused($notesFocused)
+                .submitLabel(.done)
+                .toolbar {
+                    if notesFocused {
+                        ToolbarItemGroup(placement: .keyboard) {
+                            Spacer()
+                            Button("Done") { notesFocused = false }
+                        }
+                    }
+                }
                 .padding(.horizontal, 20)
 
                 Button {

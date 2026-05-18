@@ -5,15 +5,22 @@ struct ScoreCapsule: View {
     let band: RiskBand
     var height: CGFloat = 30
 
+    // The capsule is used for per-category scores, where the stop octagon
+    // is reserved for the overall result. Collapse extreme onto thumbs-down
+    // so the capsule only ever shows the thumb family.
+    private var iconName: String {
+        band == .extreme ? "hand.thumbsdown.fill" : band.iconName
+    }
+
     var body: some View {
         HStack(spacing: height * 0.18) {
             Text("\(value)")
                 .font(.system(size: height * 0.5, weight: .heavy, design: .rounded))
                 .monospacedDigit()
                 .contentTransition(.numericText())
-            Image(systemName: band.iconName)
-                .font(.system(size: height * 0.48, weight: band.iconWeight))
-                .symbolRenderingMode(band.iconRenderingMode)
+            Image(systemName: iconName)
+                .font(.system(size: height * 0.48, weight: .semibold))
+                .symbolRenderingMode(.hierarchical)
                 .rotationEffect(band.iconRotation)
         }
         .foregroundStyle(band.color)
