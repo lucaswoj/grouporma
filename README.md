@@ -24,7 +24,12 @@ The 8 NPS ORMA categories, with the standard descriptions:
 - Thumbs up = 1, thumbs sideways = 5, thumbs down = 10 (per token).
 - Category score = average of all tokens, rounded (1-10).
 - Overall = sum of the 8 category averages (8-80).
-- GAR color bands: Green 8-31, Amber 32-58, Red 59-80 (the standard NPS/USCG thresholds scaled to 8 categories).
+- Risk bands match NPS RM-50B Table C-2: **Low** 8-35, **Medium** 36-60, **High** 61-70, **Extremely High** 71-80. Extreme triggers a danger-octagon icon and (per Table 5) requires halting until Superintendent-level approval.
+- Per-category bands on the 1-10 scale are derived proportionally: 1-4 Low, 5-7 Medium, 8 High, 9-10 Extreme.
+
+## Notes
+
+Each category pane has a free-form notes field for hazards, outliers, and rationale. Notes flow into the Summary pane and the share output, satisfying the RM-50B §46.6.8 documentation requirement.
 
 ## Build & run
 

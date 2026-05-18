@@ -4,16 +4,17 @@ struct SummaryPane: View {
     @Environment(PersistentStore.self) private var store
     @Binding var selection: Int
     @State private var showResetConfirm = false
+    @State private var dangerPulse = false
 
     var body: some View {
         let state = store.state
         let total = state.overallScore
-        let gar = state.overallGAR
+        let band = state.overallBand
 
         ScrollView {
             VStack(spacing: 16) {
                 VStack(spacing: 8) {
-                    Text("Overall Score")
+                    Text(band.label)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
                         .textCase(.uppercase)
@@ -23,32 +24,48 @@ struct SummaryPane: View {
                             .font(.system(size: 84, weight: .heavy, design: .rounded))
                             .monospacedDigit()
                             .contentTransition(.numericText())
-                        Image(systemName: gar.vote.symbolName)
-                            .font(.system(size: 72, weight: .semibold))
-                            .symbolRenderingMode(.hierarchical)
-                            .rotationEffect(gar.vote.symbolRotation)
+                        Image(systemName: band.iconName)
+                            .font(.system(size: 72, weight: band.iconWeight))
+                            .symbolRenderingMode(band.iconRenderingMode)
+                            .rotationEffect(band.iconRotation)
+                            .scaleEffect(band == .extreme && dangerPulse ? 1.12 : 1.0)
+                            .animation(.easeInOut(duration: 0.45), value: dangerPulse)
                     }
-                    .foregroundStyle(gar.color)
+                    .foregroundStyle(band.color)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 24)
-                .background(gar.color.opacity(0.14), in: .rect(cornerRadius: 20))
+                .background(band.color.opacity(0.14), in: .rect(cornerRadius: 20))
                 .overlay(
                     RoundedRectangle(cornerRadius: 20)
-                        .strokeBorder(gar.color.opacity(0.35), lineWidth: 1)
+                        .strokeBorder(band.color.opacity(0.35), lineWidth: 1)
                 )
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
+                .onAppear {
+                    if band == .extreme {
+                        dangerPulse = true
+                    }
+                }
 
                 VStack(spacing: 0) {
                     ForEach(Category.all) { cat in
                         let s = state.score(for: cat)
-                        let g = ScoreColor.gar(forCategory: s)
-                        HStack(spacing: 12) {
-                            Text(cat.title)
-                                .font(.body)
-                            Spacer()
-                            ScoreCapsule(value: s, gar: g, height: 30)
+                        let b = ScoreColor.band(forCategory: s)
+                        let note = (state.notes[cat.id] ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack(spacing: 12) {
+                                Text(cat.title)
+                                    .font(.body)
+                                Spacer()
+                                ScoreCapsule(value: s, band: b, height: 30)
+                            }
+                            if !note.isEmpty {
+                                Text(note)
+                                    .font(.callout.italic())
+                                    .foregroundStyle(.secondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 10)

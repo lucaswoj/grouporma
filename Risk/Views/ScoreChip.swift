@@ -3,7 +3,7 @@ import SwiftUI
 struct ScoreChip: View {
     let label: String
     let value: Int
-    let gar: GAR
+    let band: RiskBand
 
     var body: some View {
         VStack(spacing: 2) {
@@ -15,7 +15,7 @@ struct ScoreChip: View {
                 .font(.title.weight(.bold))
                 .monospacedDigit()
                 .contentTransition(.numericText())
-            Text(gar.label)
+            Text(band.label)
                 .font(.caption2.weight(.heavy))
                 .textCase(.uppercase)
                 .tracking(0.5)
@@ -23,12 +23,12 @@ struct ScoreChip: View {
         .padding(.horizontal, 14)
         .padding(.vertical, 8)
         .frame(minWidth: 84)
-        .background(gar.color.opacity(0.18), in: .rect(cornerRadius: 14))
+        .background(band.color.opacity(0.18), in: .rect(cornerRadius: 14))
         .overlay(
             RoundedRectangle(cornerRadius: 14)
-                .strokeBorder(gar.color.opacity(0.55), lineWidth: 1)
+                .strokeBorder(band.color.opacity(0.55), lineWidth: 1)
         )
-        .foregroundStyle(gar.color.mix(with: .primary, by: 0.35))
+        .foregroundStyle(band.color.mix(with: .primary, by: 0.35))
     }
 }
 
@@ -65,9 +65,10 @@ private extension UIColor {
 
 #Preview {
     HStack {
-        ScoreChip(label: "Category", value: 3, gar: .green)
-        ScoreChip(label: "Overall", value: 42, gar: .amber)
-        ScoreChip(label: "Overall", value: 65, gar: .red)
+        ScoreChip(label: "Category", value: 3, band: .low)
+        ScoreChip(label: "Overall", value: 42, band: .medium)
+        ScoreChip(label: "Overall", value: 65, band: .high)
+        ScoreChip(label: "Overall", value: 75, band: .extreme)
     }
     .padding()
 }
