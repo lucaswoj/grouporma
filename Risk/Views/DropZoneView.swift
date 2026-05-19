@@ -3,50 +3,71 @@ import SwiftUI
 struct DropZoneView: View {
     let zone: Vote
     let category: Category
-    let count: Int
+    let tokens: [UUID]
+    let namespace: Namespace.ID
+    let isHoverTarget: Bool
     var onTap: () -> Void
-    var onDrop: (Vote) -> Void
-
-    @State private var isTargeted = false
+    var onTokenDragStart: (UUID) -> Void
+    var onTokenDragChanged: (CGPoint) -> Void
+    var onTokenDragEnded: (CGPoint) -> Bool
 
     var body: some View {
-        Button(action: onTap) {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack(spacing: 8) {
-                    Image(systemName: zone.symbolName)
-                        .font(.subheadline.weight(.semibold))
-                        .symbolRenderingMode(.hierarchical)
-                        .rotationEffect(zone.symbolRotation)
-                    Text(zone.label)
-                        .font(.subheadline.weight(.semibold))
-                    Spacer()
-                    Text("^[\(count) vote](inflect: true)")
-                        .font(.subheadline.weight(.semibold))
-                        .monospacedDigit()
-                        .opacity(0.7)
-                }
-                .foregroundStyle(tint)
-
-                FlowLayout(spacing: 8) {
-                    ForEach(0..<count, id: \.self) { _ in
-                        TokenView(tint: tint, size: 36)
-                            .draggable(zone.rawValue)
-                            .transition(.scale.combined(with: .opacity))
-                    }
-                }
-                .frame(height: 84, alignment: .topLeading)
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: zone.symbolName)
+                    .font(.subheadline.weight(.semibold))
+                    .symbolRenderingMode(.hierarchical)
+                    .rotationEffect(zone.symbolRotation)
+                Text(zone.label)
+                    .font(.subheadline.weight(.semibold))
+                Spacer()
+                Text("^[\(tokens.count) vote](inflect: true)")
+                    .font(.subheadline.weight(.semibold))
+                    .monospacedDigit()
+                    .opacity(0.7)
             }
-            .padding(14)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .foregroundStyle(tint)
+
+            FlowLayout(spacing: 8) {
+                ForEach(tokens, id: \.self) { id in
+                    DraggableToken(
+                        id: id,
+                        namespace: namespace,
+                        tint: tint,
+                        onStart: onTokenDragStart,
+                        onChanged: onTokenDragChanged,
+                        onEnded: onTokenDragEnded
+                    )
+                    .transition(.scale.combined(with: .opacity))
+                }
+            }
+            .frame(height: 84, alignment: .topLeading)
         }
-        .buttonStyle(DropZoneButtonStyle(tint: tint, isTargeted: isTargeted))
-        .dropDestination(for: String.self) { items, _ in
-            guard let raw = items.first, let source = Vote(rawValue: raw) else { return false }
-            onDrop(source)
-            return true
-        } isTargeted: { isTargeted = $0 }
-        .animation(.spring(response: 0.3, dampingFraction: 0.75), value: isTargeted)
-        .sensoryFeedback(.impact(weight: .light), trigger: count)
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(tint.opacity(0.14))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .strokeBorder(
+                    isHoverTarget ? tint : tint.opacity(0.35),
+                    lineWidth: isHoverTarget ? 2.5 : 1
+                )
+        )
+        .background(
+            GeometryReader { geo in
+                Color.clear.preference(
+                    key: ZoneFramesKey.self,
+                    value: [zone: geo.frame(in: .named("zones"))]
+                )
+            }
+        )
+        .contentShape(Rectangle())
+        .onTapGesture(perform: onTap)
+        .animation(.spring(response: 0.3, dampingFraction: 0.75), value: isHoverTarget)
+        .sensoryFeedback(.impact(weight: .light), trigger: tokens.count)
     }
 
     private var tint: Color {
@@ -58,25 +79,61 @@ struct DropZoneView: View {
     }
 }
 
-private struct DropZoneButtonStyle: ButtonStyle {
+private struct DraggableToken: View {
+    let id: UUID
+    let namespace: Namespace.ID
     let tint: Color
-    let isTargeted: Bool
+    var onStart: (UUID) -> Void
+    var onChanged: (CGPoint) -> Void
+    var onEnded: (CGPoint) -> Bool
 
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(tint.opacity(configuration.isPressed ? 0.28 : 0.14))
+    @State private var dragOffset: CGSize = .zero
+    @State private var isDragging = false
+
+    var body: some View {
+        TokenView(tint: tint, size: 36)
+            .scaleEffect(isDragging ? 1.18 : 1.0)
+            .shadow(color: .black.opacity(isDragging ? 0.25 : 0),
+                    radius: isDragging ? 8 : 0,
+                    y: isDragging ? 4 : 0)
+            .offset(dragOffset)
+            .zIndex(isDragging ? 100 : 0)
+            .matchedGeometryEffect(id: id, in: namespace)
+            .gesture(
+                DragGesture(minimumDistance: 4, coordinateSpace: .named("zones"))
+                    .onChanged { value in
+                        if !isDragging {
+                            withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
+                                isDragging = true
+                            }
+                            onStart(id)
+                        }
+                        dragOffset = value.translation
+                        onChanged(value.location)
+                    }
+                    .onEnded { value in
+                        let didMove = onEnded(value.location)
+                        if didMove {
+                            // The token is moving to another zone. Its view in the
+                            // source zone is removed and matchedGeometryEffect on
+                            // the new view in the target zone animates from this
+                            // view's drag-location frame, so we leave dragOffset
+                            // alone here.
+                            return
+                        }
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
+                            dragOffset = .zero
+                            isDragging = false
+                        }
+                    }
             )
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .strokeBorder(
-                        isTargeted ? tint : tint.opacity(0.35),
-                        lineWidth: isTargeted ? 2.5 : 1
-                    )
-            )
-            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+    }
+}
+
+struct ZoneFramesKey: PreferenceKey {
+    static var defaultValue: [Vote: CGRect] = [:]
+    static func reduce(value: inout [Vote: CGRect], nextValue: () -> [Vote: CGRect]) {
+        value.merge(nextValue(), uniquingKeysWith: { _, new in new })
     }
 }
 

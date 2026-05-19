@@ -2,7 +2,7 @@ import Foundation
 
 struct AssessmentState: Codable, Equatable {
     var participantCount: Int
-    var votes: [String: [Vote: Int]]
+    var votes: [String: [Vote: [UUID]]]
     var notes: [String: String] = [:]
     var startedAt: Date
 
@@ -21,22 +21,38 @@ struct AssessmentState: Codable, Equatable {
     }
 
     private mutating func seedAllUp() {
+        let n = max(participantCount, 1)
         for cat in Category.all {
-            votes[cat.id] = [.up: max(participantCount, 1), .sideways: 0, .down: 0]
+            votes[cat.id] = [
+                .up: (0..<n).map { _ in UUID() },
+                .sideways: [],
+                .down: [],
+            ]
         }
     }
 
     func count(in category: Category, zone: Vote) -> Int {
-        votes[category.id]?[zone] ?? 0
+        votes[category.id]?[zone]?.count ?? 0
     }
 
-    mutating func move(in category: Category, from source: Vote, to destination: Vote) {
+    func tokens(in category: Category, zone: Vote) -> [UUID] {
+        votes[category.id]?[zone] ?? []
+    }
+
+    mutating func move(in category: Category, from source: Vote, to destination: Vote, tokenID: UUID? = nil) {
         guard source != destination,
               var zones = votes[category.id],
-              (zones[source] ?? 0) > 0
+              var sourceTokens = zones[source],
+              !sourceTokens.isEmpty
         else { return }
-        zones[source, default: 0] -= 1
-        zones[destination, default: 0] += 1
+        let moved: UUID
+        if let tokenID, let idx = sourceTokens.firstIndex(of: tokenID) {
+            moved = sourceTokens.remove(at: idx)
+        } else {
+            moved = sourceTokens.removeLast()
+        }
+        zones[source] = sourceTokens
+        zones[destination, default: []].append(moved)
         votes[category.id] = zones
     }
 

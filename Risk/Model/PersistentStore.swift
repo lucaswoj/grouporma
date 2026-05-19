@@ -3,7 +3,7 @@ import Observation
 
 @Observable
 final class PersistentStore {
-    static let key = "risk.assessment.v2"
+    static let key = "risk.assessment.v3"
 
     var state: AssessmentState
 

@@ -7,8 +7,19 @@ struct CategoryPane: View {
     let paneIndex: Int
     @Environment(PersistentStore.self) private var store
     @FocusState private var notesFocused: Bool
+    @State private var dragSource: Vote? = nil
+    @State private var dragTokenID: UUID? = nil
+    @State private var dragLocation: CGPoint? = nil
+    @State private var zoneFrames: [Vote: CGRect] = [:]
+    @Namespace private var tokenNamespace
+
+    private var hoveredZone: Vote? {
+        guard let loc = dragLocation else { return nil }
+        return zoneFrames.first { $0.value.contains(loc) }?.key
+    }
 
     var body: some View {
+        ScrollViewReader { proxy in
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 6) {
@@ -30,21 +41,42 @@ struct CategoryPane: View {
                         DropZoneView(
                             zone: zone,
                             category: category,
-                            count: store.state.count(in: category, zone: zone),
+                            tokens: store.state.tokens(in: category, zone: zone),
+                            namespace: tokenNamespace,
+                            isHoverTarget: hoveredZone == zone && dragSource != zone,
                             onTap: {
                                 withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
                                     store.state.tapMove(in: category, to: zone)
                                 }
                             },
-                            onDrop: { source in
-                                withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
-                                    store.state.move(in: category, from: source, to: zone)
+                            onTokenDragStart: { id in
+                                dragSource = zone
+                                dragTokenID = id
+                            },
+                            onTokenDragChanged: { location in dragLocation = location },
+                            onTokenDragEnded: { location in
+                                let target = zoneFrames.first { $0.value.contains(location) }?.key
+                                let source = dragSource
+                                let id = dragTokenID
+                                dragSource = nil
+                                dragTokenID = nil
+                                dragLocation = nil
+                                guard let target, let source, let id, source != target else {
+                                    return false
                                 }
+                                withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
+                                    store.state.move(in: category, from: source, to: target, tokenID: id)
+                                }
+                                return true
                             }
                         )
                     }
                 }
                 .padding(.horizontal, 20)
+                .coordinateSpace(.named("zones"))
+                .onPreferenceChange(ZoneFramesKey.self) { frames in
+                    zoneFrames = frames
+                }
 
                 TextField(
                     "Notes",
@@ -64,15 +96,6 @@ struct CategoryPane: View {
                         .strokeBorder(Color.secondary.opacity(0.2), lineWidth: 1)
                 )
                 .focused($notesFocused)
-                .submitLabel(.done)
-                .toolbar {
-                    if notesFocused {
-                        ToolbarItemGroup(placement: .keyboard) {
-                            Spacer()
-                            Button("Done") { notesFocused = false }
-                        }
-                    }
-                }
                 .padding(.horizontal, 20)
 
                 Button {
@@ -89,10 +112,18 @@ struct CategoryPane: View {
                 .buttonStyle(.borderedProminent)
                 .padding(.horizontal, 20)
                 .padding(.bottom, 56)
+                .id("bottom")
             }
         }
         .scrollDismissesKeyboard(.interactively)
-        .contentMargins(.bottom, notesFocused ? 24 : 0, for: .scrollContent)
+        .onChange(of: notesFocused) { _, focused in
+            if focused {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    proxy.scrollTo("bottom", anchor: .bottom)
+                }
+            }
+        }
+        }
     }
 }
 
