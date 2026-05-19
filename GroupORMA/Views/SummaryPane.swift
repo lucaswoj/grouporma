@@ -107,7 +107,7 @@ struct SummaryPane: View {
           }
           Button("Cancel", role: .cancel) {}
         } message: {
-          Text("Clears all votes and starts a new assessment.")
+          Text("This clears all votes and notes.")
         }
       }
     }
