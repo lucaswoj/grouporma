@@ -14,10 +14,9 @@ struct CategoryPane: View {
     // When non-nil, this token is rendered as an overlay at dragLocation
     // (outside any DropZone) so matchedGeometryEffect can start from the exact release point.
     @State private var flyingToken: (zone: Vote, id: UUID, tint: Color)? = nil
-    @Namespace private var tokenNamespace
 
     private var hoveredZone: Vote? {
-        guard let loc = dragLocation else { return nil }
+        guard dragSource != nil, let loc = dragLocation else { return nil }
         return zoneFrames.first { $0.value.contains(loc) }?.key
     }
 
@@ -47,7 +46,6 @@ struct CategoryPane: View {
                                 category: category,
                                 tokens: store.state.tokens(in: category, zone: zone),
                                 hiddenTokenID: flyingToken?.zone == zone ? flyingToken?.id : nil,
-                                namespace: tokenNamespace,
                                 isHoverTarget: hoveredZone == zone && dragSource != zone,
                                 onTap: {
                                     withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
@@ -73,18 +71,17 @@ struct CategoryPane: View {
                                     let id = dragTokenID
                                     dragSource = nil
                                     dragTokenID = nil
-                                    dragLocation = nil
                                     guard let target, let source, let id, source != target else {
                                         withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
                                             flyingToken = nil
+                                            dragLocation = nil
                                         }
                                         return false
                                     }
                                     withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
                                         store.state.move(in: category, from: source, to: target, tokenID: id)
-                                    }
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                                         flyingToken = nil
+                                        dragLocation = nil
                                     }
                                     return true
                                 }
@@ -96,10 +93,10 @@ struct CategoryPane: View {
                         TokenView(tint: flying.tint, size: 36)
                             .scaleEffect(1.18)
                             .shadow(color: .black.opacity(0.25), radius: 8, y: 4)
-                            .matchedGeometryEffect(id: flying.id, in: tokenNamespace)
                             .position(loc)
                             .zIndex(200)
                             .allowsHitTesting(false)
+                            .transition(.scale.combined(with: .opacity))
                     }
                 }
                 .padding(.horizontal, 20)

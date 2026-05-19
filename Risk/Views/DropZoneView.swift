@@ -5,7 +5,6 @@ struct DropZoneView: View {
     let category: Category
     let tokens: [UUID]
     var hiddenTokenID: UUID? = nil
-    let namespace: Namespace.ID
     let isHoverTarget: Bool
     var onTap: () -> Void
     var onTokenDragStart: (UUID) -> Void
@@ -33,9 +32,7 @@ struct DropZoneView: View {
                 ForEach(tokens, id: \.self) { id in
                     DraggableToken(
                         id: id,
-                        namespace: namespace,
                         tint: tint,
-                        isGeometrySource: id != hiddenTokenID,
                         onStart: onTokenDragStart,
                         onChanged: onTokenDragChanged,
                         onEnded: onTokenDragEnded
@@ -84,15 +81,20 @@ struct DropZoneView: View {
 
 private struct DraggableToken: View {
     let id: UUID
-    let namespace: Namespace.ID
     let tint: Color
-    var isGeometrySource: Bool = true
     var onStart: (UUID) -> Void
     var onChanged: (CGPoint) -> Void
     var onEnded: (CGPoint) -> Bool
 
-    @State private var dragOffset: CGSize = .zero
+    enum DragPhase: Equatable {
+        case pressing
+        case dragging(translation: CGSize, location: CGPoint)
+    }
+
+    @GestureState private var dragPhase: DragPhase? = nil
     @State private var isDragging = false
+    @State private var dragOffset: CGSize = .zero
+    @State private var lastLocation: CGPoint = .zero
 
     var body: some View {
         TokenView(tint: tint, size: 36)
@@ -102,35 +104,43 @@ private struct DraggableToken: View {
                     y: isDragging ? 4 : 0)
             .offset(dragOffset)
             .zIndex(isDragging ? 100 : 0)
-            .matchedGeometryEffect(id: id, in: namespace, isSource: isGeometrySource)
             .gesture(
-                DragGesture(minimumDistance: 4, coordinateSpace: .named("zones"))
-                    .onChanged { value in
-                        if !isDragging {
-                            withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
-                                isDragging = true
-                            }
-                            onStart(id)
+                LongPressGesture(minimumDuration: 0.05)
+                    .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .named("zones")))
+                    .updating($dragPhase) { value, state, _ in
+                        switch value {
+                        case .first(true):
+                            state = .pressing
+                        case .second(true, let drag?):
+                            state = .dragging(translation: drag.translation, location: drag.location)
+                        default:
+                            state = nil
                         }
-                        dragOffset = value.translation
-                        onChanged(value.location)
                     }
-                    .onEnded { value in
-                        let didMove = onEnded(value.location)
-                        if didMove {
-                            // The token is moving to another zone. Its view in the
-                            // source zone is removed and matchedGeometryEffect on
-                            // the new view in the target zone animates from this
-                            // view's drag-location frame, so we leave dragOffset
-                            // alone here.
-                            return
+            )
+            .onChange(of: dragPhase) { oldValue, newValue in
+                if case let .dragging(translation, location) = newValue {
+                    if !isDragging {
+                        withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
+                            isDragging = true
                         }
+                        onStart(id)
+                    }
+                    dragOffset = translation
+                    lastLocation = location
+                    onChanged(location)
+                } else if case .dragging = oldValue {
+                    // Gesture deactivated (normal end, cancellation, or system timeout).
+                    // Drive cleanup from here so we never strand state.
+                    let didMove = onEnded(lastLocation)
+                    if !didMove {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
                             dragOffset = .zero
                             isDragging = false
                         }
                     }
-            )
+                }
+            }
     }
 }
 
