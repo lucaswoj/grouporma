@@ -4,6 +4,7 @@ struct DropZoneView: View {
     let zone: Vote
     let category: Category
     let tokens: [UUID]
+    var hiddenTokenID: UUID? = nil
     let namespace: Namespace.ID
     let isHoverTarget: Bool
     var onTap: () -> Void
@@ -34,10 +35,12 @@ struct DropZoneView: View {
                         id: id,
                         namespace: namespace,
                         tint: tint,
+                        isGeometrySource: id != hiddenTokenID,
                         onStart: onTokenDragStart,
                         onChanged: onTokenDragChanged,
                         onEnded: onTokenDragEnded
                     )
+                    .opacity(id == hiddenTokenID ? 0 : 1)
                     .transition(.scale.combined(with: .opacity))
                 }
             }
@@ -83,6 +86,7 @@ private struct DraggableToken: View {
     let id: UUID
     let namespace: Namespace.ID
     let tint: Color
+    var isGeometrySource: Bool = true
     var onStart: (UUID) -> Void
     var onChanged: (CGPoint) -> Void
     var onEnded: (CGPoint) -> Bool
@@ -98,7 +102,7 @@ private struct DraggableToken: View {
                     y: isDragging ? 4 : 0)
             .offset(dragOffset)
             .zIndex(isDragging ? 100 : 0)
-            .matchedGeometryEffect(id: id, in: namespace)
+            .matchedGeometryEffect(id: id, in: namespace, isSource: isGeometrySource)
             .gesture(
                 DragGesture(minimumDistance: 4, coordinateSpace: .named("zones"))
                     .onChanged { value in

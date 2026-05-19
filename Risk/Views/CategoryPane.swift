@@ -11,6 +11,9 @@ struct CategoryPane: View {
     @State private var dragTokenID: UUID? = nil
     @State private var dragLocation: CGPoint? = nil
     @State private var zoneFrames: [Vote: CGRect] = [:]
+    // When non-nil, this token is rendered as an overlay at dragLocation
+    // (outside any DropZone) so matchedGeometryEffect can start from the exact release point.
+    @State private var flyingToken: (zone: Vote, id: UUID, tint: Color)? = nil
     @Namespace private var tokenNamespace
 
     private var hoveredZone: Vote? {
@@ -36,40 +39,67 @@ struct CategoryPane: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
 
-                VStack(spacing: 10) {
-                    ForEach(Vote.allCases) { zone in
-                        DropZoneView(
-                            zone: zone,
-                            category: category,
-                            tokens: store.state.tokens(in: category, zone: zone),
-                            namespace: tokenNamespace,
-                            isHoverTarget: hoveredZone == zone && dragSource != zone,
-                            onTap: {
-                                withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
-                                    store.state.tapMove(in: category, to: zone)
+                ZStack(alignment: .topLeading) {
+                    VStack(spacing: 10) {
+                        ForEach(Vote.allCases) { zone in
+                            DropZoneView(
+                                zone: zone,
+                                category: category,
+                                tokens: store.state.tokens(in: category, zone: zone),
+                                hiddenTokenID: flyingToken?.zone == zone ? flyingToken?.id : nil,
+                                namespace: tokenNamespace,
+                                isHoverTarget: hoveredZone == zone && dragSource != zone,
+                                onTap: {
+                                    withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                                        store.state.tapMove(in: category, to: zone)
+                                    }
+                                },
+                                onTokenDragStart: { id in
+                                    dragSource = zone
+                                    dragTokenID = id
+                                    let tint: Color = {
+                                        switch zone {
+                                        case .up: return .green
+                                        case .sideways: return .orange
+                                        case .down: return .red
+                                        }
+                                    }()
+                                    flyingToken = (zone, id, tint)
+                                },
+                                onTokenDragChanged: { location in dragLocation = location },
+                                onTokenDragEnded: { location in
+                                    let target = zoneFrames.first { $0.value.contains(location) }?.key
+                                    let source = dragSource
+                                    let id = dragTokenID
+                                    dragSource = nil
+                                    dragTokenID = nil
+                                    dragLocation = nil
+                                    guard let target, let source, let id, source != target else {
+                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
+                                            flyingToken = nil
+                                        }
+                                        return false
+                                    }
+                                    withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
+                                        store.state.move(in: category, from: source, to: target, tokenID: id)
+                                    }
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                                        flyingToken = nil
+                                    }
+                                    return true
                                 }
-                            },
-                            onTokenDragStart: { id in
-                                dragSource = zone
-                                dragTokenID = id
-                            },
-                            onTokenDragChanged: { location in dragLocation = location },
-                            onTokenDragEnded: { location in
-                                let target = zoneFrames.first { $0.value.contains(location) }?.key
-                                let source = dragSource
-                                let id = dragTokenID
-                                dragSource = nil
-                                dragTokenID = nil
-                                dragLocation = nil
-                                guard let target, let source, let id, source != target else {
-                                    return false
-                                }
-                                withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
-                                    store.state.move(in: category, from: source, to: target, tokenID: id)
-                                }
-                                return true
-                            }
-                        )
+                            )
+                        }
+                    }
+
+                    if let flying = flyingToken, let loc = dragLocation {
+                        TokenView(tint: flying.tint, size: 36)
+                            .scaleEffect(1.18)
+                            .shadow(color: .black.opacity(0.25), radius: 8, y: 4)
+                            .matchedGeometryEffect(id: flying.id, in: tokenNamespace)
+                            .position(loc)
+                            .zIndex(200)
+                            .allowsHitTesting(false)
                     }
                 }
                 .padding(.horizontal, 20)
