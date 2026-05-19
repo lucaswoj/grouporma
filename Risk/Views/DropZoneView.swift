@@ -66,10 +66,13 @@ struct DropZoneView: View {
         )
         .contentShape(Rectangle())
         .onTapGesture(perform: onTap)
-        .dropDestination(for: TokenDrag.self) { items, _ in
-            guard let first = items.first else { return false }
-            return onDrop(first)
-        } isTargeted: { isTargeted = $0 }
+        .onDrop(
+            of: [UTType.data.identifier],
+            delegate: ZoneDropDelegate(
+                onDrop: onDrop,
+                onTargeted: { isTargeted = $0 }
+            )
+        )
         .animation(.spring(response: 0.3, dampingFraction: 0.75), value: isTargeted)
         .sensoryFeedback(.impact(weight: .light), trigger: tokens.count)
     }
@@ -80,6 +83,38 @@ struct DropZoneView: View {
         case .sideways: .orange
         case .down: .red
         }
+    }
+}
+
+// Drop delegate that proposes a .move operation so the system suppresses the
+// green plus "copy" badge during the drag preview.
+struct ZoneDropDelegate: DropDelegate {
+    let onDrop: (TokenDrag) -> Bool
+    let onTargeted: (Bool) -> Void
+
+    func validateDrop(info: DropInfo) -> Bool {
+        info.hasItemsConforming(to: [UTType.data.identifier])
+    }
+
+    func dropEntered(info: DropInfo) { onTargeted(true) }
+    func dropExited(info: DropInfo) { onTargeted(false) }
+
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        DropProposal(operation: .move)
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        onTargeted(false)
+        guard let provider = info.itemProviders(for: [UTType.data.identifier]).first else {
+            return false
+        }
+        provider.loadDataRepresentation(forTypeIdentifier: UTType.data.identifier) { data, _ in
+            guard let data, let drag = try? JSONDecoder().decode(TokenDrag.self, from: data) else { return }
+            DispatchQueue.main.async {
+                _ = onDrop(drag)
+            }
+        }
+        return true
     }
 }
 
