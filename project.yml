@@ -1,4 +1,4 @@
-name: Risk
+name: GroupORMA
 options:
   bundleIdPrefix: com.lucaswoj
   deploymentTarget:
@@ -8,10 +8,10 @@ options:
   schemePathPrefix: ""
   generateEmptyDirectories: true
 schemes:
-  Risk:
+  GroupORMA:
     build:
       targets:
-        Risk: all
+        GroupORMA: all
     run:
       config: Debug
     test:
@@ -28,21 +28,21 @@ settings:
     DEVELOPMENT_TEAM: "6WCV8HHBRN"
     CODE_SIGN_STYLE: Automatic
 targets:
-  Risk:
+  GroupORMA:
     type: application
     platform: iOS
     sources:
-      - path: Risk
+      - path: GroupORMA
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.lucaswoj.risk
+        PRODUCT_BUNDLE_IDENTIFIER: com.lucaswoj.grouporma
         MARKETING_VERSION: "0.1"
         CURRENT_PROJECT_VERSION: "1"
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait"
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
-        INFOPLIST_KEY_CFBundleDisplayName: "Risk"
+        INFOPLIST_KEY_CFBundleDisplayName: "Group ORMA"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         TARGETED_DEVICE_FAMILY: "1,2"

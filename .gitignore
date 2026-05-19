@@ -17,7 +17,7 @@ Pods/
 .DS_Store
 
 # Generated project (regenerate with `xcodegen generate`)
-# Risk.xcodeproj/  # keep committed for easy clone-and-build
+# GroupORMA.xcodeproj/  # keep committed for easy clone-and-build
 
 # Editor
 .vscode/

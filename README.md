@@ -1,4 +1,4 @@
-# Risk
+# Group ORMA
 
 A native iOS app that helps a search-and-rescue team run a group ORMA (Operational Risk Management Assessment) without any mental math. Each participant has a token. Tap a zone to vote thumbs up, sideways, or down. The score falls out.
 
@@ -41,15 +41,15 @@ xcodegen generate
 xcrun simctl list devices available | grep "iPhone 17 Pro"
 
 # Build
-xcodebuild -scheme Risk -destination 'platform=iOS Simulator,id=<UDID>' -configuration Debug build
+xcodebuild -scheme GroupORMA -destination 'platform=iOS Simulator,id=<UDID>' -configuration Debug build
 
 # Install + launch
-APP=~/Library/Developer/Xcode/DerivedData/Risk-*/Build/Products/Debug-iphonesimulator/Risk.app
+APP=~/Library/Developer/Xcode/DerivedData/GroupORMA-*/Build/Products/Debug-iphonesimulator/GroupORMA.app
 xcrun simctl install <UDID> "$APP"
-xcrun simctl launch <UDID> com.lucaswoj.risk
+xcrun simctl launch <UDID> com.lucaswoj.grouporma
 
 # Screenshot
-xcrun simctl io <UDID> screenshot /tmp/risk.png
+xcrun simctl io <UDID> screenshot /tmp/grouporma.png
 ```
 
 ## Stack

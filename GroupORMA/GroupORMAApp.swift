@@ -2,7 +2,7 @@ import SwiftUI
 import UIKit
 
 @main
-struct RiskApp: App {
+struct GroupORMAApp: App {
     @State private var store = PersistentStore()
 
     init() {

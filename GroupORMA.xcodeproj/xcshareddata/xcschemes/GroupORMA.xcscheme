@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BDB07F728C8C6705FDB603AE"
-               BuildableName = "Risk.app"
-               BlueprintName = "Risk"
-               ReferencedContainer = "container:Risk.xcodeproj">
+               BlueprintIdentifier = "F30DB2CA8EE67F614654CE84"
+               BuildableName = "GroupORMA.app"
+               BlueprintName = "GroupORMA"
+               ReferencedContainer = "container:GroupORMA.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,10 +32,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BDB07F728C8C6705FDB603AE"
-            BuildableName = "Risk.app"
-            BlueprintName = "Risk"
-            ReferencedContainer = "container:Risk.xcodeproj">
+            BlueprintIdentifier = "F30DB2CA8EE67F614654CE84"
+            BuildableName = "GroupORMA.app"
+            BlueprintName = "GroupORMA"
+            ReferencedContainer = "container:GroupORMA.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -57,10 +57,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BDB07F728C8C6705FDB603AE"
-            BuildableName = "Risk.app"
-            BlueprintName = "Risk"
-            ReferencedContainer = "container:Risk.xcodeproj">
+            BlueprintIdentifier = "F30DB2CA8EE67F614654CE84"
+            BuildableName = "GroupORMA.app"
+            BlueprintName = "GroupORMA"
+            ReferencedContainer = "container:GroupORMA.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -76,10 +76,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BDB07F728C8C6705FDB603AE"
-            BuildableName = "Risk.app"
-            BlueprintName = "Risk"
-            ReferencedContainer = "container:Risk.xcodeproj">
+            BlueprintIdentifier = "F30DB2CA8EE67F614654CE84"
+            BuildableName = "GroupORMA.app"
+            BlueprintName = "GroupORMA"
+            ReferencedContainer = "container:GroupORMA.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>

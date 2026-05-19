@@ -1,7 +1,7 @@
 # Group ORMA
 
 Overall Score: 20
-2026-05-18T03:59:52Z
+Time: 2026-05-18T03:59:52Z
 
 ## Supervision
 
