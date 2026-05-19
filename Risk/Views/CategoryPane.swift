@@ -7,18 +7,6 @@ struct CategoryPane: View {
     let paneIndex: Int
     @Environment(PersistentStore.self) private var store
     @FocusState private var notesFocused: Bool
-    @State private var dragSource: Vote? = nil
-    @State private var dragTokenID: UUID? = nil
-    @State private var dragLocation: CGPoint? = nil
-    @State private var zoneFrames: [Vote: CGRect] = [:]
-    // When non-nil, this token is rendered as an overlay at dragLocation
-    // (outside any DropZone) so matchedGeometryEffect can start from the exact release point.
-    @State private var flyingToken: (zone: Vote, id: UUID, tint: Color)? = nil
-
-    private var hoveredZone: Vote? {
-        guard dragSource != nil, let loc = dragLocation else { return nil }
-        return zoneFrames.first { $0.value.contains(loc) }?.key
-    }
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -38,72 +26,30 @@ struct CategoryPane: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
 
-                ZStack(alignment: .topLeading) {
-                    VStack(spacing: 10) {
-                        ForEach(Vote.allCases) { zone in
-                            DropZoneView(
-                                zone: zone,
-                                category: category,
-                                tokens: store.state.tokens(in: category, zone: zone),
-                                hiddenTokenID: flyingToken?.zone == zone ? flyingToken?.id : nil,
-                                isHoverTarget: hoveredZone == zone && dragSource != zone,
-                                onTap: {
-                                    withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
-                                        store.state.tapMove(in: category, to: zone)
-                                    }
-                                },
-                                onTokenDragStart: { id in
-                                    dragSource = zone
-                                    dragTokenID = id
-                                    let tint: Color = {
-                                        switch zone {
-                                        case .up: return .green
-                                        case .sideways: return .orange
-                                        case .down: return .red
-                                        }
-                                    }()
-                                    flyingToken = (zone, id, tint)
-                                },
-                                onTokenDragChanged: { location in dragLocation = location },
-                                onTokenDragEnded: { location in
-                                    let target = zoneFrames.first { $0.value.contains(location) }?.key
-                                    let source = dragSource
-                                    let id = dragTokenID
-                                    dragSource = nil
-                                    dragTokenID = nil
-                                    guard let target, let source, let id, source != target else {
-                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
-                                            flyingToken = nil
-                                            dragLocation = nil
-                                        }
-                                        return false
-                                    }
-                                    withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
-                                        store.state.move(in: category, from: source, to: target, tokenID: id)
-                                        flyingToken = nil
-                                        dragLocation = nil
-                                    }
-                                    return true
+                VStack(spacing: 10) {
+                    ForEach(Vote.allCases) { zone in
+                        DropZoneView(
+                            zone: zone,
+                            category: category,
+                            tokens: store.state.tokens(in: category, zone: zone),
+                            onTap: {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                                    store.state.tapMove(in: category, to: zone)
                                 }
-                            )
-                        }
-                    }
-
-                    if let flying = flyingToken, let loc = dragLocation {
-                        TokenView(tint: flying.tint, size: 36)
-                            .scaleEffect(1.18)
-                            .shadow(color: .black.opacity(0.25), radius: 8, y: 4)
-                            .position(loc)
-                            .zIndex(200)
-                            .allowsHitTesting(false)
-                            .transition(.scale.combined(with: .opacity))
+                            },
+                            onDrop: { drag in
+                                guard drag.categoryID == category.id, drag.sourceZone != zone else {
+                                    return false
+                                }
+                                withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
+                                    store.state.move(in: category, from: drag.sourceZone, to: zone, tokenID: drag.id)
+                                }
+                                return true
+                            }
+                        )
                     }
                 }
                 .padding(.horizontal, 20)
-                .coordinateSpace(.named("zones"))
-                .onPreferenceChange(ZoneFramesKey.self) { frames in
-                    zoneFrames = frames
-                }
 
                 TextField(
                     "Notes",

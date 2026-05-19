@@ -1,15 +1,25 @@
 import SwiftUI
+import UIKit
+import UniformTypeIdentifiers
+
+struct TokenDrag: Codable, Transferable {
+    let id: UUID
+    let sourceZone: Vote
+    let categoryID: String
+
+    static var transferRepresentation: some TransferRepresentation {
+        CodableRepresentation(contentType: .data)
+    }
+}
 
 struct DropZoneView: View {
     let zone: Vote
     let category: Category
     let tokens: [UUID]
-    var hiddenTokenID: UUID? = nil
-    let isHoverTarget: Bool
     var onTap: () -> Void
-    var onTokenDragStart: (UUID) -> Void
-    var onTokenDragChanged: (CGPoint) -> Void
-    var onTokenDragEnded: (CGPoint) -> Bool
+    var onDrop: (TokenDrag) -> Bool
+
+    @State private var isTargeted = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -30,14 +40,12 @@ struct DropZoneView: View {
 
             FlowLayout(spacing: 8) {
                 ForEach(tokens, id: \.self) { id in
-                    DraggableToken(
-                        id: id,
+                    DraggableTokenSource(
+                        payload: TokenDrag(id: id, sourceZone: zone, categoryID: category.id),
                         tint: tint,
-                        onStart: onTokenDragStart,
-                        onChanged: onTokenDragChanged,
-                        onEnded: onTokenDragEnded
+                        size: 36
                     )
-                    .opacity(id == hiddenTokenID ? 0 : 1)
+                    .frame(width: 36, height: 36)
                     .transition(.scale.combined(with: .opacity))
                 }
             }
@@ -52,21 +60,17 @@ struct DropZoneView: View {
         .overlay(
             RoundedRectangle(cornerRadius: 16)
                 .strokeBorder(
-                    isHoverTarget ? tint : tint.opacity(0.35),
-                    lineWidth: isHoverTarget ? 2.5 : 1
+                    isTargeted ? tint : tint.opacity(0.35),
+                    lineWidth: isTargeted ? 2.5 : 1
                 )
-        )
-        .background(
-            GeometryReader { geo in
-                Color.clear.preference(
-                    key: ZoneFramesKey.self,
-                    value: [zone: geo.frame(in: .named("zones"))]
-                )
-            }
         )
         .contentShape(Rectangle())
         .onTapGesture(perform: onTap)
-        .animation(.spring(response: 0.3, dampingFraction: 0.75), value: isHoverTarget)
+        .dropDestination(for: TokenDrag.self) { items, _ in
+            guard let first = items.first else { return false }
+            return onDrop(first)
+        } isTargeted: { isTargeted = $0 }
+        .animation(.spring(response: 0.3, dampingFraction: 0.75), value: isTargeted)
         .sensoryFeedback(.impact(weight: .light), trigger: tokens.count)
     }
 
@@ -79,75 +83,96 @@ struct DropZoneView: View {
     }
 }
 
-private struct DraggableToken: View {
-    let id: UUID
+// Hosts a SwiftUI TokenView inside a UIView so we can attach a UIDragInteraction
+// whose underlying long-press recognizer has a shorter minimumPressDuration than
+// SwiftUI's .draggable allows (default is ~0.5s for scroll disambiguation).
+struct DraggableTokenSource: UIViewRepresentable {
+    let payload: TokenDrag
     let tint: Color
-    var onStart: (UUID) -> Void
-    var onChanged: (CGPoint) -> Void
-    var onEnded: (CGPoint) -> Bool
+    let size: CGFloat
+    var pressDuration: TimeInterval = 0.1
 
-    enum DragPhase: Equatable {
-        case pressing
-        case dragging(translation: CGSize, location: CGPoint)
+    func makeCoordinator() -> Coordinator { Coordinator(payload: payload) }
+
+    func makeUIView(context: Context) -> DragHostView {
+        let view = DragHostView(tint: tint, size: size, pressDuration: pressDuration)
+        let interaction = UIDragInteraction(delegate: context.coordinator)
+        interaction.isEnabled = true
+        view.addInteraction(interaction)
+        return view
     }
 
-    @GestureState private var dragPhase: DragPhase? = nil
-    @State private var isDragging = false
-    @State private var dragOffset: CGSize = .zero
-    @State private var lastLocation: CGPoint = .zero
+    func updateUIView(_ uiView: DragHostView, context: Context) {
+        context.coordinator.payload = payload
+    }
 
-    var body: some View {
-        TokenView(tint: tint, size: 36)
-            .scaleEffect(isDragging ? 1.18 : 1.0)
-            .shadow(color: .black.opacity(isDragging ? 0.25 : 0),
-                    radius: isDragging ? 8 : 0,
-                    y: isDragging ? 4 : 0)
-            .offset(dragOffset)
-            .zIndex(isDragging ? 100 : 0)
-            .gesture(
-                LongPressGesture(minimumDuration: 0.05)
-                    .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .named("zones")))
-                    .updating($dragPhase) { value, state, _ in
-                        switch value {
-                        case .first(true):
-                            state = .pressing
-                        case .second(true, let drag?):
-                            state = .dragging(translation: drag.translation, location: drag.location)
-                        default:
-                            state = nil
-                        }
-                    }
-            )
-            .onChange(of: dragPhase) { oldValue, newValue in
-                if case let .dragging(translation, location) = newValue {
-                    if !isDragging {
-                        withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
-                            isDragging = true
-                        }
-                        onStart(id)
-                    }
-                    dragOffset = translation
-                    lastLocation = location
-                    onChanged(location)
-                } else if case .dragging = oldValue {
-                    // Gesture deactivated (normal end, cancellation, or system timeout).
-                    // Drive cleanup from here so we never strand state.
-                    let didMove = onEnded(lastLocation)
-                    if !didMove {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
-                            dragOffset = .zero
-                            isDragging = false
-                        }
-                    }
+    final class Coordinator: NSObject, UIDragInteractionDelegate {
+        var payload: TokenDrag
+
+        init(payload: TokenDrag) { self.payload = payload }
+
+        func dragInteraction(_ interaction: UIDragInteraction, itemsForBeginning session: UIDragSession) -> [UIDragItem] {
+            let snapshot = payload
+            let provider = NSItemProvider()
+            provider.registerDataRepresentation(forTypeIdentifier: UTType.data.identifier, visibility: .ownProcess) { completion in
+                do {
+                    completion(try JSONEncoder().encode(snapshot), nil)
+                } catch {
+                    completion(nil, error)
                 }
+                return nil
             }
+            let item = UIDragItem(itemProvider: provider)
+            item.localObject = snapshot
+            return [item]
+        }
+
+        func dragInteraction(_ interaction: UIDragInteraction, previewForLifting item: UIDragItem, session: UIDragSession) -> UITargetedDragPreview? {
+            guard let view = interaction.view else { return nil }
+            let params = UIDragPreviewParameters()
+            params.visiblePath = UIBezierPath(ovalIn: view.bounds)
+            params.backgroundColor = .clear
+            return UITargetedDragPreview(view: view, parameters: params)
+        }
     }
 }
 
-struct ZoneFramesKey: PreferenceKey {
-    static var defaultValue: [Vote: CGRect] = [:]
-    static func reduce(value: inout [Vote: CGRect], nextValue: () -> [Vote: CGRect]) {
-        value.merge(nextValue(), uniquingKeysWith: { _, new in new })
+final class DragHostView: UIView {
+    let pressDuration: TimeInterval
+    private let tokenSize: CGFloat
+    private let hosting: UIHostingController<TokenView>
+
+    init(tint: Color, size: CGFloat, pressDuration: TimeInterval) {
+        self.pressDuration = pressDuration
+        self.tokenSize = size
+        self.hosting = UIHostingController(rootView: TokenView(tint: tint, size: size))
+        super.init(frame: CGRect(x: 0, y: 0, width: size, height: size))
+        backgroundColor = .clear
+        hosting.view.backgroundColor = .clear
+        hosting.view.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(hosting.view)
+        NSLayoutConstraint.activate([
+            hosting.view.centerXAnchor.constraint(equalTo: centerXAnchor),
+            hosting.view.centerYAnchor.constraint(equalTo: centerYAnchor),
+            hosting.view.widthAnchor.constraint(equalToConstant: size),
+            hosting.view.heightAnchor.constraint(equalToConstant: size),
+        ])
+    }
+
+    required init?(coder: NSCoder) { fatalError("unsupported") }
+
+    override var intrinsicContentSize: CGSize {
+        CGSize(width: tokenSize, height: tokenSize)
+    }
+
+    // UIDragInteraction installs a UILongPressGestureRecognizer on this view to
+    // gate the drag lift. Catch each one as it's added and shorten the press
+    // duration so drags initiate faster than the iOS default.
+    override func addGestureRecognizer(_ gestureRecognizer: UIGestureRecognizer) {
+        super.addGestureRecognizer(gestureRecognizer)
+        if let press = gestureRecognizer as? UILongPressGestureRecognizer {
+            press.minimumPressDuration = pressDuration
+        }
     }
 }
 
