@@ -90,8 +90,10 @@ struct CategoryPane: View {
         }
         .scrollDismissesKeyboard(.interactively)
         .onChange(of: notesFocused) { _, focused in
-            if focused {
-                withAnimation(.easeInOut(duration: 0.3)) {
+            guard focused else { return }
+            Task {
+                try? await Task.sleep(for: .milliseconds(300))
+                withAnimation(.easeInOut(duration: 0.25)) {
                     proxy.scrollTo("bottom", anchor: .bottom)
                 }
             }
