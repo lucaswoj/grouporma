@@ -14,11 +14,6 @@ struct SummaryPane: View {
         ScrollView {
             VStack(spacing: 16) {
                 VStack(spacing: 8) {
-                    Text(band.label)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .textCase(.uppercase)
-                        .tracking(0.5)
                     HStack(spacing: 18) {
                         Text("\(total)")
                             .font(.system(size: 84, weight: .heavy, design: .rounded))
