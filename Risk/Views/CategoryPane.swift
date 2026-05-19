@@ -59,7 +59,7 @@ struct CategoryPane: View {
                     ),
                     axis: .vertical
                 )
-                .lineLimit(1...3)
+                .lineLimit(1...)
                 .font(.subheadline)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
