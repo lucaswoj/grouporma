@@ -22,3 +22,10 @@ Pods/
 # Editor
 .vscode/
 .idea/
+
+# App Store Connect API private keys (never commit)
+AuthKey_*.p8
+*.p8
+
+# Personal notes
+RM-50B_Chp46_Operational_Leadership.md
