@@ -1,0 +1,35 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build
+        run: |
+          xcodebuild \
+            -scheme GroupORMA \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            -configuration Debug \
+            build \
+            | xcbeautify --renderer github-actions
+        env:
+          NSUnbufferedIO: YES
+
+      - name: Verify privacy manifest is bundled
+        run: |
+          APP=$(find ~/Library/Developer/Xcode/DerivedData -name 'GroupORMA.app' -path '*Debug-iphonesimulator*' | head -1)
+          test -f "$APP/PrivacyInfo.xcprivacy" || (echo "PrivacyInfo.xcprivacy missing from bundle"; exit 1)
+          echo "PrivacyInfo.xcprivacy present in $APP"

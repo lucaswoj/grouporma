@@ -15,6 +15,7 @@
 		7300871DDBDF71FF820F5D1B /* StartPane.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B2AD9B3341DB982E1BBD75 /* StartPane.swift */; };
 		90B1ED2B0ADED2CC29F81F49 /* Vote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1022FAB18407E67519B829DD /* Vote.swift */; };
 		9C57423799CC3D54DC9F3679 /* ScoreCapsule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1236BA03D23E09134B4AB8F0 /* ScoreCapsule.swift */; };
+		A6FD548C94D72BC4E18ABF52 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 897186D79C06F082A646D8FE /* PrivacyInfo.xcprivacy */; };
 		AD34388BF89A261E4B893C4B /* AssessmentState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5111E323ACACAEB173B6BE48 /* AssessmentState.swift */; };
 		B0AC35A156FFA4C85F6E2092 /* GroupORMAApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3D3548F3E6A1F044353285 /* GroupORMAApp.swift */; };
 		C79D69D0A11CE931019AD56A /* ScoreColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EC1438AE2B2315D6F9E1AB /* ScoreColor.swift */; };
@@ -30,6 +31,7 @@
 		5111E323ACACAEB173B6BE48 /* AssessmentState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssessmentState.swift; sourceTree = "<group>"; };
 		57EC1438AE2B2315D6F9E1AB /* ScoreColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreColor.swift; sourceTree = "<group>"; };
 		64E72FCDAB87293D0572DFC9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		897186D79C06F082A646D8FE /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A76AB03FB7796107D4CD6D8B /* TokenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenView.swift; sourceTree = "<group>"; };
 		A9EB9C6A22D29256F67414F9 /* DropZoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropZoneView.swift; sourceTree = "<group>"; };
 		AA12F469C60EB22AB583ECED /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -58,6 +60,7 @@
 				64E72FCDAB87293D0572DFC9 /* Assets.xcassets */,
 				AA12F469C60EB22AB583ECED /* ContentView.swift */,
 				CF3D3548F3E6A1F044353285 /* GroupORMAApp.swift */,
+				897186D79C06F082A646D8FE /* PrivacyInfo.xcprivacy */,
 			);
 			path = GroupORMA;
 			sourceTree = "<group>";
@@ -156,6 +159,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F5858844BD5C02AB3568D2C3 /* Assets.xcassets in Resources */,
+				A6FD548C94D72BC4E18ABF52 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,13 +260,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Group ORMA";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -272,7 +276,7 @@
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
-				TARGETED_DEVICE_FAMILY = "1";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -340,13 +344,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Group ORMA";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -356,7 +360,7 @@
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
-				TARGETED_DEVICE_FAMILY = "1";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
